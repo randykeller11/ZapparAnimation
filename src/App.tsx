@@ -1,19 +1,23 @@
-import React, { Suspense } from 'react';
-import { useFrame, useLoader } from '@react-three/fiber';
+import React, { Suspense } from "react";
+import { useFrame, useLoader } from "@react-three/fiber";
 import {
- ZapparCamera, ImageTracker, ZapparCanvas, Loader, BrowserCompatibility,
-} from '@zappar/zappar-react-three-fiber';
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+  ZapparCamera,
+  ImageTracker,
+  ZapparCanvas,
+  Loader,
+  BrowserCompatibility,
+} from "@zappar/zappar-react-three-fiber";
+import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
-import glb from './assets/waving.glb';
-import targetImage from './assets/example-tracking-image.zpt';
+import glb from "./assets/waving.glb";
+import targetImage from "./assets/example-tracking-image.zpt";
 
 let action: THREE.AnimationAction;
 
-const Model = () => {
+const Model = ({ ...props }) => {
   const clock = new THREE.Clock();
-  const gltf = useLoader(GLTFLoader, glb) as any ;
+  const gltf = useLoader(GLTFLoader, glb) as any;
   const mixer = new THREE.AnimationMixer(gltf.scene);
 
   action = mixer.clipAction(gltf.animations[0]);
@@ -21,7 +25,7 @@ const Model = () => {
 
   useFrame(() => mixer.update(clock.getDelta()));
 
-  return <primitive object={gltf.scene} />;
+  return <primitive object={gltf.scene} {...props} />;
 };
 
 function App() {
@@ -33,7 +37,7 @@ function App() {
         <Suspense fallback={null}>
           <ImageTracker targetImage={targetImage}>
             <React.Suspense fallback={null}>
-              <Model />
+              <Model rotation={[Math.PI / 2, 0, 0]} scale={[0.5, 0.5, 0.5]} />
             </React.Suspense>
           </ImageTracker>
         </Suspense>
@@ -43,15 +47,14 @@ function App() {
       <div
         id="zappar-button"
         role="button"
-        onKeyPress={() => action.play() }
+        onKeyPress={() => action.play()}
         tabIndex={0}
-        onClick={() => action.play() }
-      >Play Animation</div>
+        onClick={() => action.play()}
+      >
+        Play Animation
+      </div>
     </>
   );
 }
 
 export default App;
-
-
-
